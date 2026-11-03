@@ -1,7 +1,6 @@
 import { body } from "express-validator";
 
-const registerValidation = () => {
-  return [
+export const registerValidation = [
     body("fullName")
       .trim()
       .notEmpty()
@@ -22,6 +21,3 @@ const registerValidation = () => {
       .isLength({ min: 8 })
       .withMessage("Password must be at least 8 characters"),
   ];
-};
-
-export { registerValidation };
