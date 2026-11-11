@@ -25,3 +25,29 @@ export const updateProfileValidation = [
     return true;
   }),
 ];
+
+export const updatePasswordValidation = [
+  body("currentPassword")
+    .notEmpty()
+    .withMessage("Current Password is required")
+    .isLength({ min: 8 })
+    .withMessage("Password must be at least 8 characters"),
+
+  body("newPassword")
+    .notEmpty()
+    .withMessage("New Password is required")
+    .isLength({ min: 8 })
+    .withMessage("New Password must be at least 8 characters"),
+
+  body("confirmPassword")
+    .notEmpty()
+    .withMessage("Confirm Password is required"),
+
+    body().custom((_, { req }) => {
+  if (req.body.newPassword !== req.body.confirmPassword) {
+    throw new Error("New Password and Confirm Password do not match");
+  }
+
+  return true;
+})
+];

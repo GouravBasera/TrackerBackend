@@ -1,6 +1,7 @@
 import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js"
 import { User } from "./user.model.js";
+import bcrypt from "bcryptjs"
 
 export const getCurrentUser = async (req, res) => {
     const safeUser = {
@@ -46,11 +47,30 @@ export const updateCurrentUser = async (req, res) => {
         _id: req.user._id,
         fullName: req.user.fullName,
         email: req.user.email,
-        createdAt: req.createdAt,
+        createdAt: req.user.createdAt,
         updatedAt: req.user.updatedAt
     }
 
     return res.status(200).json(
         new ApiResponse(200, safeUser, "User Profile Updated")
+    )
+}
+
+export const changePassword = async (req, res) => {
+    const { currentPassword, newPassword } = req.body
+
+    const user = await User.findById(req.user._id).select("+password")
+    const isPassewordValid = await bcrypt.compare(currentPassword, user.password)
+
+    if(!isPassewordValid){
+        throw new ApiError(401, "Current password is incorrect")
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10)
+
+    await user.save()
+
+    return res.status(200).json(
+        new ApiResponse(200, null, "Password Change Successfull")
     )
 }
