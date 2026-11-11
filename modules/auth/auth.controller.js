@@ -2,8 +2,9 @@ import { User } from "../users/user.model.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import bcrypt from "bcryptjs"
+import jwt from "jsonwebtoken";
 
-const registerUser = async (req, res) => {
+export const registerUser = async (req, res) => {
   const { fullName, email, password } = req.body;
   const normalizedEmail = email.toLowerCase().trim();
 
@@ -31,3 +32,39 @@ const registerUser = async (req, res) => {
 
   return res.status(201).json(new ApiResponse(201, safeUser, "User Creation Successfull"))
 };
+
+export const loginUser = async (req, res) => {
+  const {email, password} = req.body;
+
+  const normalizedEmail = email.toLowerCase().trim()
+
+  const user = await User.findOne({email: normalizedEmail}).select("+password")
+
+  if(!user){
+    throw new ApiError(401, "Invalid Email or Password")
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  if(!isPasswordValid){
+    throw new ApiError(401, "Invalid Email or Password")
+  }
+
+  const accessToken = jwt.sign(
+    {_id: user._id},
+    process.env.JWT_SECRET,
+    {expiresIn: process.env.JWT_EXPIRES_IN}
+  )
+
+  const safeUser = {
+    _id: user._id,
+    fullName: user.fullName,
+    email: user.email,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, {user: safeUser, accessToken}, "Login Successfull")
+  )
+}
