@@ -2,8 +2,8 @@ import { Router } from "express";
 import { verifyJWT } from "../../middleware/auth.middleware.js";
 import { getCurrentUser } from "./user.controller.js";
 
-const router = Router()
+const app = Router()
 
-router.get("/me", verifyJWT, getCurrentUser)
+app.get("/me", verifyJWT, getCurrentUser)
 
-export default router
+export default app
