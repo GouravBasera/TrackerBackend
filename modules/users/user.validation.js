@@ -51,3 +51,9 @@ export const updatePasswordValidation = [
   return true;
 })
 ];
+
+export const deleteAccountValidation = [
+  body("password")
+  .notEmpty()
+  .withMessage("Password is required to delete the account")
+]

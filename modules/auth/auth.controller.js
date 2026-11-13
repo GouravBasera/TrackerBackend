@@ -51,7 +51,9 @@ export const loginUser = async (req, res) => {
   }
 
   const accessToken = jwt.sign(
-    {_id: user._id},
+    {_id: user._id,
+      tokenVersion: user.tokenVersion
+    },
     process.env.JWT_SECRET,
     {expiresIn: process.env.JWT_EXPIRES_IN}
   )
@@ -68,3 +70,13 @@ export const loginUser = async (req, res) => {
     new ApiResponse(200, {user: safeUser, accessToken}, "Login Successfull")
   )
 }
+
+export const logoutUser = async (req, res) => {
+  req.user.tokenVersion++;
+  await req.user.save()
+  return res.status(200).json(
+    new ApiResponse(200, null, "User Logged Out Successfully")
+  )
+}
+
+export const deleteUser = async (req, res) => {}

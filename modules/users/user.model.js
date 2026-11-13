@@ -18,6 +18,10 @@ const userSchema = new Schema({
         required: true,
         select: false
     },
+    tokenVersion: {
+        type: Number,
+        default: 0
+    }
 }, {timestamps: true})
 
 export const User = mongoose.model("User", userSchema)
