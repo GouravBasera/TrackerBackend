@@ -1,4 +1,4 @@
-import { body, check, checkExact } from "express-validator";
+import { body, checkExact } from "express-validator";
 
 export const updateProfileValidation = [
   checkExact([
