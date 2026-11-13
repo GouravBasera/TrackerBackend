@@ -56,4 +56,6 @@ export const deleteAccountValidation = [
   body("password")
   .notEmpty()
   .withMessage("Password is required to delete the account")
+  .isLength()
+  .withMessage("Password must be at least 8 characters")
 ]

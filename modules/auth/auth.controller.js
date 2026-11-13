@@ -79,4 +79,24 @@ export const logoutUser = async (req, res) => {
   )
 }
 
-export const deleteUser = async (req, res) => {}
+export const deleteCurrentUser = async (req, res) => {
+  const { password } = req.body;
+
+  const user = await User.findOne({email: req.user.email}).select("+password")
+
+  if(!user){
+    throw new ApiError(404, "User not found")
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password)
+
+  if(!isPasswordValid){
+    throw new ApiError(401, "Password is incorrect")
+  }
+
+  await User.deleteOne({_id: user._id})
+
+  return res.status(200).json(
+    new ApiResponse(200, null, "User Deleted Successfully")
+  )
+}
