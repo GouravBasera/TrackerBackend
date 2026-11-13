@@ -1,13 +1,15 @@
-
 import { ApiError } from "../utils/ApiError.js";
 
 const errorMiddleware = (err, req, res, next) => {
   let error = err;
 
+  if (error.code === 11000) {
+    error = new ApiError(409, "Duplicate resource");
+  }
   if (!(error instanceof ApiError)) {
     error = new ApiError(
       error.statusCode || 500,
-      error.message || "Internal Server Error",
+      error.statusCode ? error.message : "Internal Server Error",
     );
   }
 
