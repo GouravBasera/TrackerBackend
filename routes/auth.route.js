@@ -1,9 +1,9 @@
 import {Router} from "express";
-import { loginValidation, registerValidation } from "./auth.validation.js";
-import { validationRequest } from "../../middleware/validateRequest.middleware.js";
+import { loginValidation, registerValidation } from "../validations/auth.validation.js";
+import { validationRequest } from "../middleware/validateRequest.middleware.js";
 import { deleteCurrentUser, loginUser, logoutUser, registerUser } from "./auth.controller.js"
-import { verifyJWT } from "../../middleware/auth.middleware.js";
-import { deleteAccountValidation } from "../users/user.validation.js";
+import { verifyJWT } from "../middleware/auth.middleware.js";
+import { deleteAccountValidation } from "../validations/user.validation.js";
 
 const app = Router();
 
