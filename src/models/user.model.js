@@ -21,6 +21,12 @@ const userSchema = new Schema({
     tokenVersion: {
         type: Number,
         default: 0
+    },
+    passVaultPasswords: {
+        passVault: [{
+            type: Schema.Types.ObjectId,
+            ref: 'PassVault'
+        }]
     }
 }, {timestamps: true})
 

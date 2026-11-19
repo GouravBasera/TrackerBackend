@@ -2,6 +2,7 @@ import express from "express";
 import errorMiddleware from "./src/middleware/error.middleware.js";
 import authRoutes from './src/routes/auth.route.js'
 import userRoutes from "./src/routes/user.router.js";
+import passVaultRoutes from "./src/routes/passVault.route.js"
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.get("/api/v1/health", (req, res) => {
 
 app.use("/api/v1/auth", authRoutes)
 app.use("/api/v1/users", userRoutes)
+app.use("/api/v1/pass-vault", passVaultRoutes)
 
 app.use(errorMiddleware);
 
