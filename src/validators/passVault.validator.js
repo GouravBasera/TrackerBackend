@@ -28,9 +28,7 @@ export const passwordSaveValidation = [
         .optional()
         .trim()
         .notEmpty()
-        .withMessage("Email cannot be empty")
-        .isEmail()
-        .withMessage("A valid email is required"),
+        .withMessage("Email cannot be empty"),
 
       body().custom((_, { req }) => {
         const hasUsername = req.body.username !== undefined;

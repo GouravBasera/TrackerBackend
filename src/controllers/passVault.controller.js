@@ -1,8 +1,9 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { randomInt } from "crypto";
-import bcrypt from "bcryptjs";
 import { User } from "../models/user.model.js";
+import { PassVault } from "../models/passVault.model.js"
+import { encryptPassword } from "../utils/encrypt.js";
 
 export const generatePassword = async (req, res) => {
   const { passwordLength, isCharRequired, isNumberRequired } = req.body;
@@ -63,15 +64,34 @@ export const generatePassword = async (req, res) => {
 };
 
 export const savePassword = async (req, res) => {
-    const { platformName, username, email, password } = req.body;
+  const { platformName, username, email, password } = req.body;
 
-    if(!platformName && (!username || !email)){
-        throw new ApiError(409, "Platform name and user id is required")
-    }
+  if (!platformName || (!username && !email)) {
+    throw new ApiError(
+      400,
+      "Platform name and at least one user identifier are required",
+    );
+  }
 
-    if(!password){
-        throw new ApiError(409, "Password field is required")
-    }
+  if (!password) {
+    throw new ApiError(409, "Password field is required");
+  }
 
-    const hashedPassword = bcrypt.hash(password, 10);
-}
+  const encryptedPassword = encryptPassword(password)
+
+  const savedPassword = await PassVault.create({
+    platformName, username, email, encryptedPassword, owner: req.user._id
+  })
+
+  const responseData = {
+    _id: savedPassword._id,
+    platformName: savedPassword.platformName,
+    username: savedPassword.username,
+    email: savedPassword.email,
+    createdAt: savedPassword.createdAt
+  }
+
+  return res.status(201).json(
+    new ApiResponse(201, responseData, "Password Saved Successfully")
+  )
+};
