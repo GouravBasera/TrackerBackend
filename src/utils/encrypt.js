@@ -27,3 +27,31 @@ export const encryptPassword = async (password) => {
 
     return `${iv.toString("hex")}:${authTag}:${encrypted}`
 }
+
+export const decryptPassword = (encryptedData) => {
+
+    const [iv, authTag, encrypted] = encryptedData.split(":");
+
+    const ivBuffer = Buffer.from(iv, "hex");
+    const authTagBuffer = Buffer.from(authTag, "hex");
+
+    const key = getEncryptionKey();
+
+    const decipher = createDecipheriv(
+        "aes-256-gcm",
+        key,
+        ivBuffer
+    );
+
+    decipher.setAuthTag(authTagBuffer);
+
+    let decrypted = decipher.update(
+        encrypted,
+        "hex",
+        "utf8"
+    );
+
+    decrypted += decipher.final("utf8");
+
+    return decrypted;
+};

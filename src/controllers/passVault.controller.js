@@ -1,9 +1,8 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { randomInt } from "crypto";
-import { User } from "../models/user.model.js";
 import { PassVault } from "../models/passVault.model.js"
-import { encryptPassword } from "../utils/encrypt.js";
+import { encryptPassword, decryptPassword } from "../utils/encrypt.js";
 
 export const generatePassword = async (req, res) => {
   const { passwordLength, isCharRequired, isNumberRequired } = req.body;
@@ -63,7 +62,7 @@ export const generatePassword = async (req, res) => {
     .json(new ApiResponse(200, password, "Password Generated Successfully"));
 };
 
-export const savePassword = async (req, res) => {
+export const saveEncryptedPassword = async (req, res) => {
   const { platformName, username, email, password } = req.body;
 
   if (!platformName || (!username && !email)) {
@@ -77,7 +76,7 @@ export const savePassword = async (req, res) => {
     throw new ApiError(409, "Password field is required");
   }
 
-  const encryptedPassword = encryptPassword(password)
+  const encryptedPassword = await encryptPassword(password)
 
   const savedPassword = await PassVault.create({
     platformName, username, email, encryptedPassword, owner: req.user._id
@@ -94,4 +93,44 @@ export const savePassword = async (req, res) => {
   return res.status(201).json(
     new ApiResponse(201, responseData, "Password Saved Successfully")
   )
+};
+
+export const getPassword = async (req, res) => {
+
+  const { platformName, username, email } = req.body;
+
+  if (!platformName && !username && !email) {
+    throw new ApiError(400, "Search criteria is not defined");
+  }
+
+  const searchCriteria = [];
+
+  if (platformName) {
+    searchCriteria.push({ platformName });
+  }
+
+  if (username) {
+    searchCriteria.push({ username });
+  }
+
+  if (email) {
+    searchCriteria.push({ email });
+  }
+
+  const savedPasswords = await PassVault.find({
+    owner: req.user._id,
+    $or: searchCriteria
+  }).select("-encryptedPassword");
+
+  if(savedPasswords.length <= 0){
+    throw new ApiError(404, "No Passwords Found")
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      savedPasswords,
+      "Passwords Retrieved Successfully"
+    )
+  );
 };
