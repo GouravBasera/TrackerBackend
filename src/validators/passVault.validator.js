@@ -45,7 +45,6 @@ export const passwordSaveValidation = [
     ),
 ];
 
-
 export const findPasswordValidation = [
     checkExact(
         [

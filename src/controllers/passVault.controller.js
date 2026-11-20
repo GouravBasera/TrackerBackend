@@ -95,7 +95,7 @@ export const saveEncryptedPassword = async (req, res) => {
   )
 };
 
-export const getPassword = async (req, res) => {
+export const findPassword = async (req, res) => {
 
   const { platformName, username, email } = req.body;
 
@@ -131,6 +131,46 @@ export const getPassword = async (req, res) => {
       200,
       savedPasswords,
       "Passwords Retrieved Successfully"
+    )
+  );
+};
+
+export const deletePassword = async (req, res) => {
+
+  const { platformName, username, email } = req.body;
+
+  if (!platformName && !username && !email) {
+    throw new ApiError(400, "Search criteria is not defined");
+  }
+
+  const searchCriteria = [];
+
+  if (platformName) {
+    searchCriteria.push({ platformName });
+  }
+
+  if (username) {
+    searchCriteria.push({ username });
+  }
+
+  if (email) {
+    searchCriteria.push({ email });
+  }
+
+  const deletedPassword = await PassVault.findOneAndDelete({
+    owner: req.user._id,
+    $or: searchCriteria
+  });
+
+  if(!deletedPassword){
+    throw new ApiError(404, "No Passwords Found")
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      deletedPassword,
+      "Passwords Deleted Successfully"
     )
   );
 };
