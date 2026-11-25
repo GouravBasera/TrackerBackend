@@ -25,7 +25,11 @@ const userSchema = new Schema({
     passVaultPasswords: [{
         type: Schema.Types.ObjectId,
         ref: "PassVault"
-    }]
+    }],
+    notes: [{
+        type: Schema.Types.ObjectId,
+        ref: "Note"
+}]
 }, {timestamps: true})
 
 export const User = mongoose.model("User", userSchema)
