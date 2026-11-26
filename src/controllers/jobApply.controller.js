@@ -41,3 +41,5 @@ export const registerJobProfile = async (req, res) => {
     new ApiResponse(200, jobUser, "User Created Successfully")
   )
 };
+
+export const generateCoverLetter = async (req, res) => {}

@@ -1,3 +1,5 @@
+import bodyParser from "body-parser";
+import cors from "cors"
 import express from "express";
 import errorMiddleware from "./src/middleware/error.middleware.js";
 import authRoutes from './src/routes/auth.route.js'
@@ -8,6 +10,8 @@ import jobApplyRoutes from "./src/routes/jobApply.route.js"
 const app = express();
 
 app.use(express.json())
+app.use(cors())
+app.use(bodyParser.json())
 
 app.get("/api/v1/health", (req, res) => {
     res.status(200).json({status: "Ok"})

@@ -3,11 +3,12 @@ import { createJobProfileValidator } from "../validators/jobUser.validator.js";
 import { registerJobProfile } from "../controllers/jobApply.controller.js";
 import { verifyJWT } from "../middleware/auth.middleware.js"
 import { validationRequest } from "../middleware/validateRequest.middleware.js";
+import { upload, uploadFiles } from "../utils/Cloudflare.js";
 
 const app = Router()
 
 app.post("/register", verifyJWT, createJobProfileValidator, validationRequest, registerJobProfile)
-// app.post("/resumes")
+app.post("/resumes", verifyJWT, upload.array("content", 5), uploadFiles)
 // app.get("/resumes")
 // app.get("/resumes/:id")
 // app.patch("/resumes/:id/parsed-data")
