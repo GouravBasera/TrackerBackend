@@ -28,3 +28,18 @@ export const createTodoValidator = [
         .withMessage("Status cannot be empty")
     ], {message: "Unexpecte Fields"})
 ]
+
+export const updateTodoValidator = [
+    checkExact([
+        body("title")
+        .optional()
+        .notEmpty()
+        .withMessage("Title cannot be empty")
+        .trim(),
+
+        body("status")
+        .optional()
+        .notEmpty()
+        .withMessage("Status cannot be empty")
+    ], {message: "Unexpecte Fields"})
+]
